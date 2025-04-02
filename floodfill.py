@@ -1,4 +1,5 @@
 import numpy as np
+from enum import Enum
 #representing a maze and solving it using floodfill 
 
 #7*7 block maze
@@ -14,7 +15,7 @@ maze = np.array([
 ])
 
 #enum for directional movement
-class Direction:
+class Direction(Enum):
     UP = 1
     RIGHT = 2
     DOWN = 3
@@ -40,7 +41,7 @@ def move_to_target(pos=[0, 0], finish_pos=[(size - 1) // 2, (size - 1) // 2]):
 
     # Calculate values for all directions
     direction_values = {}
-    for direction, (dx, dy, bit) in direction_offsets.items():
+    for direction, (dx, dy,_) in direction_offsets.items():
         try:
             direction_values[direction] = maze[pos[0] + dx, pos[1] + dy]
         except IndexError:
@@ -48,10 +49,10 @@ def move_to_target(pos=[0, 0], finish_pos=[(size - 1) // 2, (size - 1) // 2]):
 
     if distance == 0 or pos == finish_pos:
         print("Maze solved!")
-        exit()
+        return
 
     # Find the direction with the next lower value
-    for direction, (dx, dy, bit) in direction_offsets.items():
+    for direction, (dx, dy,_) in direction_offsets.items():
         if direction_values[direction] == distance - 1:
             walk(direction)
             break
@@ -73,5 +74,11 @@ maze_to_solve = np.array([
     [0b1001, 0b0001, 0b0001, 0b0011, 0b0001, 0b0001, 0b0110],
 ])
 
+def has_wall(maze, pos, direction):
+    _, _, mask = direction_offsets[direction]
+    return maze[pos[0], pos[1]] & mask != 0
+
+for direction in direction_offsets:
+    print(f"Direction {direction}: {'wall' if has_wall(maze_to_solve, [6, 6], direction) else 'no wall'}")
 
 
