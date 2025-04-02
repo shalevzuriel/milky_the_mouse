@@ -31,38 +31,33 @@ def walk(direction):
     if direction == Move.DOWN:
         current_pos[0] += 1
 
-def move_to_target(pos=[0,0], finish_pos=[(size - 1)/2, (size - 1)/2]):
+def move_to_target(pos=[0, 0], finish_pos=[(size - 1) // 2, (size - 1) // 2]):
     distance = maze[pos[0], pos[1]]
-    #TODO - fix repetative code
-    try:
-        up_val = maze[pos[0] - 1, pos[1]]
-    except:
-        up_val = size #a big value for now
-    try:
-        right_val = maze[pos[0], pos[1] + 1]
-    except:
-        right_val = size
-    try:
-        down_val = maze[pos[0] + 1, pos[1]]
-    except:
-        down_val = size
-    try:
-        left_val = maze[pos[0], pos[1] - 1]
-    except: 
-        left_val = size
-    
-    if distance == 0 or pos == finish_pos: 
+    directions = {
+        Move.UP: (-1, 0),
+        Move.RIGHT: (0, 1),
+        Move.DOWN: (1, 0),
+        Move.LEFT: (0, -1),
+    }
+
+    # Calculate values for all directions
+    direction_values = {}
+    for direction, (dx, dy) in directions.items():
+        try:
+            direction_values[direction] = maze[pos[0] + dx, pos[1] + dy]
+        except IndexError:
+            direction_values[direction] = size  # Assign a large value for out-of-bounds
+
+    if distance == 0 or pos == finish_pos:
         print("Maze solved!")
         exit()
-    elif up_val == distance - 1:
-        walk(Move.UP)
-    elif right_val == distance -1:
-        walk(Move.RIGHT)
-    elif down_val == distance -1:
-        walk(Move.DOWN)
-    elif left_val == distance - 1:
-        walk(Move.LEFT)
-    
+
+    # Find the direction with the next lower value
+    for direction, (dx, dy) in directions.items():
+        if direction_values[direction] == distance - 1:
+            walk(direction)
+            break
+
     print(current_pos)
     move_to_target(current_pos, finish_pos)
     
