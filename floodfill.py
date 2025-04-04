@@ -2,18 +2,6 @@ import numpy as np
 from enum import Enum
 #representing a maze and solving it using floodfill 
 
-#7*7 block maze
-size = 7
-maze_dis = np.array([
-    [6,5,4,3,4,5,6],
-    [5,4,3,2,3,4,5],
-    [4,3,2,1,2,3,4],
-    [3,2,1,0,1,2,3],
-    [4,3,2,1,2,3,4],
-    [5,4,3,2,3,4,5],
-    [6,5,4,3,4,5,6]
-])
-
 #enum for directional movement
 class Direction(Enum):
     UP = 1
@@ -28,75 +16,78 @@ direction_offsets = {
     Direction.LEFT: (0, -1, 0b1000),
 }
 
-start_pos = [3,0]
-current_pos = start_pos
 
-def walk(direction):
+def walk(cell, direction):
     move_x, move_y = direction_offsets[direction][:2]
-    current_pos[0] += move_x
-    current_pos[1] += move_y
-
-position_history = [start_pos]
-
-def move_to_target(maze_to_solve, pos=[0, 0], finish_pos=[(size - 1) // 2, (size - 1) // 2]):
-    distance = maze_dis[pos[0], pos[1]]
-    print(pos)
-    if distance == 0 or pos == finish_pos:
-        print("Maze solved!")
-        return
-    # Calculate values for all directions
-    direction_values = {}
-    for direction, (dx, dy,_) in direction_offsets.items():
-        try:
-            if pos[0] + dx < 0 or pos[1] + dy < 0:
-                raise IndexError("Index out of bounds")
-            direction_values[direction] = maze_dis[pos[0] + dx, pos[1] + dy]
-        except IndexError:
-            direction_values[direction] = size * size  # Assign a large value for out-of-bounds
-
-
-    breaked = False
-    lowest_dis = size * size
-    for direction, (dx, dy,_) in direction_offsets.items():
-        if has_wall(maze_to_solve, pos, direction):
-            continue
-        if direction_values[direction] == distance - 1:
-            walk(direction)
-            breaked = True
-            break
-        lowest_dis = min(lowest_dis, direction_values[direction])
-    if breaked == False:
-        update_maze_dis(maze_dis, position_history, lowest_dis - distance + 1)
-    if pos != current_pos:
-        position_history.append(current_pos)
-    move_to_target(maze_to_solve, current_pos, finish_pos)
-    
-
-#Here we will create an example maze and solve it
-#use bitmask to encode walls in each direction
-#TODO - method that updated the maze distances with each step
-#TODO - gradient decent with walls. 
-maze_example = np.array([
-    [0b1001, 0b0101, 0b0101, 0b0011, 0b1001, 0b0101, 0b0111],
-    [0b1100, 0b0011, 0b1101, 0b0110, 0b1010, 0b1001, 0b0011],
-    [0b1001, 0b0010, 0b1001, 0b0011, 0b1100, 0b0110, 0b1010],
-    [0b0110, 0b1010, 0b1100, 0b0100, 0b0001, 0b0101, 0b0110],
-    [0b1001, 0b0100, 0b0101, 0b0111, 0b1100, 0b0011, 0b1011],
-    [0b1010, 0b1001, 0b0101, 0b0101, 0b0101, 0b0110, 0b1010],
-    [0b1100, 0b0100, 0b1001, 0b0101, 0b0101, 0b0101, 0b0110],
-])
+    cell[0] += move_x
+    cell[1] += move_y
+    return cell
 
 def has_wall(maze, pos, direction):
     _, _, mask = direction_offsets[direction]
     return maze[pos[0], pos[1]] & mask != 0
 
+#This is the video about floodfill: https://youtu.be/ktn3C7aXVR0?si=hgcQJnGxJFgDgqat
+def floodfill(maze_to_solve, start_cell, target_cell):
+    size = len(maze_to_solve)
+    maze_dis = np.full((size, size), np.nan)
+    maze_dis[target_cell[0], target_cell[1]] = 0
+    cell_queue = [target_cell]
+    current_cell = cell_queue.pop(0)
+    while current_cell != start_cell:
+        distance = maze_dis[current_cell[0], current_cell[1]]
+        for direction, (dx, dy, bit) in direction_offsets.items():
+            neighbor_cell = [current_cell[0] + dx, current_cell[1] + dy]
+            try: 
+                if neighbor_cell[0] < 0 or neighbor_cell[1] < 0:
+                    raise IndexError("Index out of bounds")
+                neighbor_cell_dis = maze_dis[neighbor_cell[0], neighbor_cell[1]]
+            except IndexError:
+                continue
+            if has_wall(maze_to_solve, current_cell, direction) or (not np.isnan(neighbor_cell_dis)):
+                continue
+            cell_queue.append(neighbor_cell)
+            maze_dis[neighbor_cell[0], neighbor_cell[1]] = distance + 1
+        current_cell = cell_queue.pop(0)
+    print(maze_dis)
+    return maze_dis
 
-def update_maze_dis(maze, pos_history, additional_dis):
-    for i in range(len(pos_history)):
-        place = pos_history[len(pos_history) - 1 - i]
-        maze[place[0], place[1]] += additional_dis + i
 
+def move_to_target(maze_to_solve, maze_dis, start_cell, target_cell):
+    current_cell = start_cell
+    distance = maze_dis[current_cell[0], current_cell[1]]
+    print(current_cell)
+    if current_cell == target_cell:
+        print("Maze solved!")
+        return
+    for direction, (dx, dy,_) in direction_offsets.items():
+        neighbor_cell = [current_cell[0] + dx, current_cell[1] + dy]
+        try: 
+            if neighbor_cell[0] < 0 or neighbor_cell[1] < 0:
+                raise IndexError("Index out of bounds")
+            neighbor_cell_dis = maze_dis[neighbor_cell[0], neighbor_cell[1]]
+        except IndexError:
+            continue
+        if (not has_wall(maze_to_solve, current_cell, direction)) and neighbor_cell_dis == distance - 1:
+            current_cell = walk(current_cell, direction)
+            break
+    move_to_target(maze_to_solve,maze_dis, current_cell, target_cell)
 
-move_to_target(maze_example, (3,0))
-#print(len(position_history))
+def solve(maze_to_solve, start_cell, target_cell):
+    maze_dis = floodfill(maze_to_solve, start_cell, target_cell)
+    move_to_target(maze_to_solve, maze_dis, start_cell, target_cell)
 
+#Here we will create an example maze and solve it
+#use bitmask to encode walls in each direction
+maze_example = np.array([
+    [0b1001, 0b0001, 0b0011, 0b1011, 0b1001, 0b0011, 0b1011],
+    [0b1010, 0b1010, 0b1100, 0b0110, 0b1010, 0b1010, 0b1010],
+    [0b1010, 0b1010, 0b1001, 0b0011, 0b1010, 0b1100, 0b0110],
+    [0b0110, 0b1010, 0b1100, 0b0100, 0b0100, 0b0001, 0b0011],
+    [0b1001, 0b0110, 0b1001, 0b0001, 0b0011, 0b1110, 0b1010],
+    [0b1010, 0b1001, 0b0110, 0b1010, 0b1000, 0b0011, 0b1010],
+    [0b1100, 0b0110, 0b1001, 0b0110, 0b1110, 0b1100, 0b0110],
+])
+
+solve(maze_example, [3,0], [3,3])
+#TODO - Method to update maze walls each cell and do floodfill each time
