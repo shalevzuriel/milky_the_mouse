@@ -91,3 +91,4 @@ maze_example = np.array([
 
 solve(maze_example, [3,0], [3,3])
 #TODO - Method to update maze walls each cell and do floodfill each time
+#1
