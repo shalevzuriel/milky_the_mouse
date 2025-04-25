@@ -53,6 +53,7 @@ def time_pulse_us(pin, pulse_level, timeout_us=1000000):
     timeout_us (which is in microseconds). """
     pass
 
+"""
 Reading Memory
 
 The machine module allows you to read from the device’s memory, 
@@ -60,3 +61,4 @@ getting 1 byte (8 bits; mem8), 2 byte (16 bits; mem16), or 4 byte
 (32 bits; mem32) words from physical addresses. For example: mem8[0x00] 
 reads 1 byte on physical address 0x00. This has a number of uses, for 
 example if you’d like to read data from the nRF51 registers.
+"""
