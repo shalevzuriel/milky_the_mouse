@@ -187,7 +187,7 @@ class _MicroBitDigitalPin():
 
     def write_analog(value):
         """ Output a PWM signal on the pin, with the duty cycle proportional to the provided 
-        value. The value may be either an integer or a floating point number between 0 
+        value. The value may be either an integer or a floating point   number between 0 
         (0% duty cycle) and 1023 (100% duty). """
         pass
 
