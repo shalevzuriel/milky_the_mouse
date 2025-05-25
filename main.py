@@ -1,20 +1,17 @@
 from microbit import *
 from machine import*
-import microbit
-import superbit
+from Ultra_Sensors import*
+#available pins: 8, 12, 13, 14, 15, 16, (19,20 ?)
+frontSensor = Ultra_Sensors(pin12, pin13)
+rightSensor = Ultra_Sensors(pin1, pin2)
+leftSensor = Ultra_Sensors(pin12, pin13)
 
-display.show("HI")
 print("test")
-while True:
-    pin9.write_digital(1)
-    sleep(0.001)
-    pin9.write_digital(0)
-    time = time_pulse_us(pin10, 1)
-    distance = ((time*0.343)/2)/10
+for i in range (100):
+    distance = frontSensor.distance_mm()
     print(distance)
-    sleep(100)
-
-    
+    sleep(10)
+#sleep 10 works generally, tweaking can be in order
     
 ''''
 while True:
