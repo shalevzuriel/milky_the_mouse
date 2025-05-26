@@ -1,5 +1,28 @@
 from microbit import *
 from machine import*
+import superbit as sb
+from Ultra_Sensors import*
+#available pins: 8, 12, 13, 14, 15, 16, (19,20 ?)
+leftSensor = Ultra_Sensors(pin12, pin13)
+STOPDISTANCE = 100 #Defined in mm
+currentDistance = 10000
+while(STOPDISTANCE < currentDistance):
+    sb.motor_control(sb.M1, 255, 0)
+    sb.motor_control(sb.M2, 255, 0)
+    sb.motor_control(sb.M3, 255, 0)
+    sb.motor_control(sb.M4, 255, 0)
+    currentDistance = leftSensor.distance_mm()
+    print(currentDistance)
+    
+sb.motor_control(sb.M1, 0, 0)
+sb.motor_control(sb.M2, 0, 0)
+sb.motor_control(sb.M3, 0, 0)
+sb.motor_control(sb.M4, 0, 0)
+
+
+''''
+from microbit import *
+from machine import*
 from Ultra_Sensors import*
 #available pins: 8, 12, 13, 14, 15, 16, (19,20 ?)
 frontSensor = Ultra_Sensors(pin12, pin13)
@@ -13,7 +36,8 @@ for i in range (100):
     sleep(10)
 #sleep 10 works generally, tweaking can be in order
     
-''''
+
+
 while True:
     superbit.motor_control(superbit.M1, 255, 0)
     superbit.motor_control(superbit.M2, 255, 0)
