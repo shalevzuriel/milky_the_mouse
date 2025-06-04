@@ -2,7 +2,12 @@ from microbit import *
 from machine import*
 import superbit as sb
 from Ultra_Sensors import*
+from milky import*
 #available pins: 8, 12, 13, 14, 15, 16, (19,20 ?)
+
+robot = milky()
+robot.move()
+'''
 def motors(leftSpeed, rightSpeed): 
     intLeftSpeed = int(leftSpeed)
     intRightSpeed = int(rightSpeed)
@@ -53,7 +58,7 @@ while(STOPDISTANCE < frontDistance):
 
 motors(0,0)
 
-
+'''
 
 
 
