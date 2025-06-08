@@ -2,18 +2,23 @@ from microbit import *
 from machine import*
 import superbit as sb
 from Ultra_Sensors import*
-#from milky import*
-from MPU6050 import*
+from milky import*
+#from MPU6050 import*
 #available pins: 8, 12, 13, 14, 15, 16, (19,20 ?)
-'''
-sleep(1000)
+sleep(300)
 leftSensor = Ultra_Sensors(pin12, pin13)
 rightSensor = Ultra_Sensors(pin1, pin2)
 frontSensor = Ultra_Sensors(pin8, pin9)
-i2c.init(freq=400000, sda=pin20, scl=pin19)
-gyro = MPU6050(i2c) 
+#i2c.init(freq=400000, sda=pin20, scl=pin19)
+#gyro = MPU6050(i2c) 
 
-robot = milky(leftSensor=leftSensor, rightSensor=rightSensor, frontSensor=frontSensor, orientation=0, cell=pin16, gyro=gyro)
+robot = milky(leftSensor=leftSensor, rightSensor=rightSensor, frontSensor=frontSensor, orientation=0, cell=pin16)
+
+robot.turn(1500)
+robot.moveBlock()
+robot.turn(1500)
+robot.moveBlock()
+robot.turn(1500)
 robot.moveBlock()
 
 '''
@@ -66,3 +71,8 @@ while(STOPDISTANCE < frontDistance):
     sleep(100)
 
 motors(0,0)
+
+'''
+
+
+
