@@ -3,9 +3,51 @@ from machine import*
 import superbit as sb
 from Ultra_Sensors import*
 from milky import*
+import radio
 #from MPU6050 import*
 #available pins: 8, 12, 13, 14, 15, 16, (19,20 ?)
+
+radio.on()
+radio.config(group=1)
+BLOCK_LENGTH = 262 #mm
+TURN_RIGHT_TIME = -1450 #check real values
+TURN_LEFT_TIME = 1500 
+BASE_STOP = 90
+leftSensor = Ultra_Sensors(pin12, pin13)
+rightSensor = Ultra_Sensors(pin1, pin2)
+frontSensor = Ultra_Sensors(pin8, pin9)
+
 sleep(300)
+robot = milky(leftSensor=leftSensor, rightSensor=rightSensor, frontSensor=frontSensor, orientation=0, cell=pin16)
+
+robot.moveBlock(BASE_STOP)
+radio.send("1 Finished move command")
+robot.turn(TURN_LEFT_TIME)
+radio.send("1 Finished turn command")
+robot.moveBlock(BASE_STOP + 2*BLOCK_LENGTH)
+radio.send("2 Finished move command")
+robot.turn(TURN_LEFT_TIME)
+radio.send("2 Finished turn command")
+robot.moveBlock(BASE_STOP)
+radio.send("3 Finished move command")
+robot.turn(TURN_RIGHT_TIME)
+radio.send("3 Finished turn command")
+robot.moveBlock(BASE_STOP)
+radio.send("4 Finished move command")
+robot.turn(TURN_LEFT_TIME)
+radio.send("1 Finished turn command")
+robot.moveBlock(BASE_STOP + 2 * BLOCK_LENGTH)
+radio.send("5 Finished move command")
+robot.turn(TURN_LEFT_TIME)
+radio.send("5 Finished turn command")
+robot.moveBlock(BASE_STOP + BLOCK_LENGTH)
+radio.send("6 Finished move command")
+
+'''
+
+-------------------------------------------
+
+
 leftSensor = Ultra_Sensors(pin12, pin13)
 rightSensor = Ultra_Sensors(pin1, pin2)
 frontSensor = Ultra_Sensors(pin8, pin9)
@@ -20,8 +62,7 @@ robot.turn(1500)
 robot.moveBlock()
 robot.turn(1500)
 robot.moveBlock()
-
-'''
+-------------------------------------------
 def motors(leftSpeed, rightSpeed): 
     intLeftSpeed = int(leftSpeed)
     intRightSpeed = int(rightSpeed)
