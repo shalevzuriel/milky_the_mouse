@@ -11,7 +11,7 @@ radio.on()
 radio.config(group=1)
 BLOCK_LENGTH = 262 #mm
 TURN_RIGHT_TIME = -1450 #check real values
-TURN_LEFT_TIME = 1500 
+TURN_LEFT_TIME = 1400
 BASE_STOP = 90
 leftSensor = Ultra_Sensors(pin12, pin13)
 rightSensor = Ultra_Sensors(pin1, pin2)

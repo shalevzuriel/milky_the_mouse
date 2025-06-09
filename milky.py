@@ -48,8 +48,8 @@ class milky:
             prevError = rightDistance-leftDistance 
         elif leftDistance>MADM and rightDistance<MADM: #case 2: PD using only right sensor
             prevError = 2*(rightDistance-MIDDLE_DISTANCE)
-        elif leftDistance<MADM and rightDistance>MADM: #case 3: PD using only left sensor
-            prevError = 2*(leftDistance-MIDDLE_DISTANCE)
+        elif leftDistance<MADM and rightDistance>MADM: #ca014120se 3: PD using only left sensor
+            prevError = 2*(MIDDLE_DISTANCE-leftDistance)
         else:
             prevError = 1000 # defines not useable value in the case where no sesnsors can be used to prevent PD from being perfomed
 
@@ -58,15 +58,15 @@ class milky:
             rightDistance, leftDistance, frontDistance = self.updateSensors()
             currentTime = running_time()
             radio.send("frontDistance " + str(frontDistance))
-            radio.send("rightDistance " + str(rightDistance))
-            radio.send("leftDistance " + str(leftDistance))
+            #radio.send("rightDistance " + str(rightDistance))
+            #radio.send("leftDistance " + str(leftDistance))
             #defining e(t) according to which PD you want to perform
             if leftDistance<MADM and rightDistance <MADM: #case 1: both sensors are in range
                 e_t = rightDistance-leftDistance 
             elif leftDistance>MADM and rightDistance<MADM: #case 2: PD using only right sensor
                 e_t = 2*(rightDistance-MIDDLE_DISTANCE)
             elif leftDistance<MADM and rightDistance>MADM: #case 3: PD using only left sensor
-                e_t = 2*(leftDistance-MIDDLE_DISTANCE)
+                e_t = 2*(MIDDLE_DISTANCE - leftDistance) #Left is the opposite of right.
             else:
                 e_t = 1000 #set e_t to an not useable value in case no sensor can be used. prevent PD from being performed.
             
